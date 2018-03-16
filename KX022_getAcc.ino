@@ -10,7 +10,8 @@
 #define BLE_REQ   10
 #define BLE_RDY   2
 #define BLE_RST   9
-
+#define GET_PULSE_READING
+#define PRINT_LED_VALS
 // create peripheral instance, see pinouts above
 BLEPeripheral                    blePeripheral       = BLEPeripheral(BLE_REQ, BLE_RDY, BLE_RST);
 
@@ -144,6 +145,8 @@ void loop()
     } 
   }
   */
+
+     //   Serial.print(" LOOP ");
   
   if (!B1_isPressed & !digitalRead(PIN_BUTTON1)) // timer used for button debounce
   {
@@ -242,7 +245,7 @@ void initPulseSensor() {
   // pulse.setReg(PulsePlug::COMMAND, PulsePlug::RESET_Cmd);
 
 
-  /*
+  
       Serial.print("PART: ");
 
       Serial.print(pulse.getReg(PulsePlug::PART_ID));
@@ -255,7 +258,7 @@ void initPulseSensor() {
 
       Serial.println(pulse.getReg(PulsePlug::SEQ_ID));
 
-  */
+  
 
   pulse.setReg(PulsePlug::INT_CFG, 0x03);       // turn on interrupts
 
@@ -284,7 +287,7 @@ void initPulseSensor() {
   pulse.setReg(PulsePlug::PS_LED3, 0x02);       // LED current for LED 3 (IR2)
 
 
-  /*
+
       Serial.print( "PS_LED21 = ");
 
       Serial.println(pulse.getReg(PulsePlug::PS_LED21), BIN);
@@ -294,7 +297,7 @@ void initPulseSensor() {
       Serial.println(pulse.readParam(0x01), BIN);
 
 
-  */
+
   pulse.writeParam(PulsePlug::PARAM_CH_LIST, 0x77);         // all measurements on
 
 
@@ -343,9 +346,9 @@ void initPulseSensor() {
 
   pulse.setReg(PulsePlug::COMMAND, PulsePlug::PSALS_AUTO_Cmd);     // starts an autonomous read loop
 
-  // Serial.println(pulse.getReg(PulsePlug::CHIP_STAT), HEX);
+   Serial.println(pulse.getReg(PulsePlug::CHIP_STAT), HEX);
 
-  //   Serial.print("end init");
+   Serial.print("end init");
 
 }
 void readPulseSensor() {
@@ -713,4 +716,25 @@ void characteristicUnsubscribed(BLECentral& central, BLECharacteristic& characte
   Serial.println(F("Characteristic event, unsubscribed"));
 }
 
+int smooth(float data, float filterVal, float smoothedVal) {
+
+
+
+  if (filterVal > 1) {      // check to make sure param's are within range
+
+    filterVal = .99;
+
+  }
+
+  else if (filterVal <= 0) {
+
+    filterVal = 0;
+
+  }
+
+  smoothedVal = (data * (1 - filterVal)) + (smoothedVal  *  filterVal);
+
+  return (int)smoothedVal;
+
+}
 
