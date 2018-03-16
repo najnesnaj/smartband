@@ -1,6 +1,6 @@
 #include <Wire.h>
 #include <SPI.h>
-#include <KX022.h>
+//#include <KX022.h>
 #include <SSD1306Spi.h>
 #include <SI114.h>
 #include <BLEPeripheral.h>
@@ -32,7 +32,7 @@ unsigned long long               lastSent            = 0;
 //SoftwareI2C sWire(14, 16);
 //KX022<SoftwareI2C> acc(sWire);
 //#else
-KX022<> acc(Wire);
+//KX022<> acc(Wire);
 //KX022<TwoWire>
 //KX022 acc(acc); // TwoWire is the default class, so this is the same as above
 //#endif
@@ -80,7 +80,7 @@ void setup()
 
   pinMode(PIN_BUTTON1, INPUT_PULLUP);
 
-  acc.init();
+ //JJ acc.init();
 
   oled.setScreenSize(OLED_WIDTH, OLED_HEIGHT);
   oled.init();
@@ -205,7 +205,7 @@ void page_startup()
 */
 
 
- oled.drawString(0,0,"BPM:" ); oled.drawString(10,0,myString ); //display heart beat
+ oled.drawString(0,0,"BPM:" ); oled.drawString(30,0,myString ); //display heart beat
   
   oled.drawString(0, 10, __DATE__);
   
@@ -218,17 +218,18 @@ void page_accelerometer()
 {
   char fltBuf[5];
 String myString = String(BPM);
-  acc.getAccelXYZ(xyz);
+//JJ  acc.getAccelXYZ(xyz);
 
   oled.clear();
  // float2chars(xyz[0], fltBuf);
  // oled.drawString(0, 0, "X:"); oled.drawString(10, 0, fltBuf);
  
-   oled.drawString(0,0,"BPM:" ); oled.drawString(10,0,myString ); //display heart beat
-  float2chars(xyz[1], fltBuf);
+   oled.drawString(0,0,"BPM:" ); oled.drawString(30,0,myString ); //display heart beat
+ /* float2chars(xyz[1], fltBuf);
   oled.drawString(0, 10, "Y:"); oled.drawString(10, 10, fltBuf);
   float2chars(xyz[2], fltBuf);
-  oled.drawString(0, 20, "Z:"); oled.drawString(10, 20, fltBuf);
+  oled.drawString(0, 20, "Z:"); oled.drawString(10, 20, fltBuf);*/
+  
   oled.display();
 }
 
