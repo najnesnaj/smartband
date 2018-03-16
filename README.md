@@ -40,7 +40,12 @@ Click the row to select the library.
 Click the Install button to install the library.
 
 
+NOTE :
+by flashing the Arduino script, you overwrite the firmware (the watch as you knew it, is no more ...)
+This is work in progress, and I'm a lousy programmer ....
 
+My intention is to monitor heart rate.
+For now I use the "Nordic nrf Connect App" to read out data from the watch, but I guess soldering the serial port is an easier option ...
 
 
 
