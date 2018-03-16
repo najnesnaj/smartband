@@ -1,5 +1,6 @@
 
 
+
 # smartband
 ID107 heartrate nordic nrf51822 smartwatch arduino
 
@@ -45,6 +46,7 @@ NOTE :
 
 by flashing the Arduino script, you overwrite the firmware (the watch as you knew it, is no more ...)
 This is work in progress, and I'm a lousy programmer ....
+I cut a few corners, by commenting out stuff in the libraries (eg //#include <avr/sleep.h> #include <util/atomic.h>)
 
 My intention is to monitor heart rate.
 For now I use the "Nordic nrf Connect App" to read out data from the watch, but I guess soldering the serial port is an easier option ...
@@ -56,6 +58,10 @@ For reference, @sanpii has the same board as mine ID107 ver2.4 in his repo https
  sda, scl = 14,16 for kx022 and = 22,23 for Si1142. Kx022 scans as 0x1F (7b address) 
 
 
+
+I found a lot of usefull information on https://gitter.im/nRF51822-Arduino-Mbed-smart-watch/Lobby
+ 
+You can have look at the inside of the watch on  https://fccid.io/2AHFTID107/Internal-Photos/Internal-Photos-3028344
 
 
 
