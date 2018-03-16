@@ -1,0 +1,29 @@
+{
+  "name": "Squix78 OLED library",
+  "version": "3.2.8",
+  "keywords": "ssd1306, SH1106, oled, display, i2c, spi, brzo",
+  "description": "Library for any SSD1306 or SH1106 OLED",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/micooke/squix78_OLED.git"
+  },
+  "authors":
+  [
+    {
+        "name": "Daniel Eichhorn",
+        "email": "squix78@gmail.com",
+        "url": "http://blog.squix.ch"
+    },
+    {
+        "name": "Fabrice Weinberg",
+        "email": "fabrice@weinberg.me"
+    },
+    {
+        "name": "Mark Cooke",
+        "email": ""
+    }
+  ],
+  "frameworks": "arduino",
+  "platforms": "*"
+}
