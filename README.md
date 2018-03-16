@@ -53,10 +53,11 @@ For now I use the "Nordic nrf Connect App" to read out data from the watch, but 
 
 There exist different versions of this watch, mine is 2.4 (e.g. version 2.3 has a different pinout for si1142 ( SDA pin 26, SCL pin 28)
 
+
 For reference, @sanpii has the same board as mine ID107 ver2.4 in his repo https://github.com/sanpii/open-id107
 
  sda, scl = 14,16 for kx022 and = 22,23 for Si1142. Kx022 scans as 0x1F (7b address) 
-
+(modified SI114.h hardcoded ;)) 
 
 
 I found a lot of usefull information on https://gitter.im/nRF51822-Arduino-Mbed-smart-watch/Lobby
