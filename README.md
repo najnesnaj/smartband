@@ -68,34 +68,12 @@ You can have look at the inside of the watch on  https://fccid.io/2AHFTID107/Int
 
 
 
+I used the PSO2 demo, but I get a wide range of heart beats ;)
+
+https://moderndevice.com/news/pulse-sensor-i/ 
 
 
-Progress :
-
-I soldered a serial port 
-
-And this data I get without covering sensor
-90951590	253	0	90951843
-1	 BPM 142	 signal size 2996
-97059551	252	0	97059803
-0
-92773492	254	0	92773746
-1	 BPM 576	 signal size 2996
-
-
-
-and this with my finger in front of sensor
-
-1	 BPM 163	 signal size 1890
-121310060	262	0	121310322
-0
-121178996	259	0	121179255
-120078066	254	0	120078320
-121821309	261	0	121821570
-
-
-
-
+My guess is : in the original watch the green led blink at a high frequency, in my demo they do not blink ....
 
 
 
