@@ -162,8 +162,9 @@ void loop()
     tPage = millis();
     draw_page(page_num);
   }
-  delay(10);
-  readPulseSensor(); //heart rate sensor
+ // delay(100);
+ // readPulseSensor(); //heart rate sensor
+    readPulseSensorPSO2(); //heart rate sensor
   yield();
 }
 
@@ -286,8 +287,9 @@ void initPulseSensor() {
 
   // read the
 
-  pulse.setReg(PulsePlug::PS_LED21, 0x38);      // LED current for 2 (IR1 - high nibble) & LEDs 1 (red - low nibble)
-
+//  pulse.setReg(PulsePlug::PS_LED21, 0x38);      // LED current for 2 (IR1 - high nibble) & LEDs 1 (red - low nibble)
+//PSO2
+ pulse.setReg(PulsePlug::PS_LED21, 0x39);      // LED current for 2 (IR1 - high nibble) & LEDs 1 (red - low nibble)
   pulse.setReg(PulsePlug::PS_LED3, 0x02);       // LED current for LED 3 (IR2)
 
 
@@ -355,6 +357,425 @@ void initPulseSensor() {
   Serial.print("end init");
 
 }
+
+void readPulseSensorPSO2(){
+
+
+
+    static int foundNewFinger, red_signalSize, red_smoothValley;
+
+    static long red_valley, red_Peak, red_smoothRedPeak, red_smoothRedValley, 
+
+               red_HFoutput, red_smoothPeak; // for PSO2 calc
+
+    static  int IR_valley=0, IR_peak=0, IR_smoothPeak, IR_smoothValley, binOut, lastBinOut;
+
+    static unsigned long lastTotal, lastMillis, IRtotal, valleyTime = millis(), lastValleyTime = millis(), peakTime = millis(), lastPeakTime=millis(), lastBeat, beat;
+
+    static float IR_baseline, red_baseline, IR_HFoutput, IR_HFoutput2, shiftedOutput, LFoutput, hysterisis;
+
+
+
+    unsigned long total=0, start;
+
+    int i=0;
+
+    int IR_signalSize;
+
+    red = 0;
+
+    IR1 = 0;
+
+    IR2 = 0;
+
+    total = 0;
+
+    start = millis();
+
+
+
+         
+
+    
+
+     #ifdef POWERLINE_SAMPLING
+
+     
+
+     while (millis() - start < 16){   // 60 hz - or use 33 for two cycles
+
+     // 50 hz in Europe use 20, or 40
+
+       Serial.print("sample");
+
+     #else     
+
+     while (i < SAMPLES_TO_AVERAGE){      
+
+     #endif
+
+     
+
+     
+
+     #ifdef AMBIENT_LIGHT_SAMPLING   
+
+     pulse.fetchData();
+
+     
+
+     #else 
+
+     pulse.fetchLedData();
+
+     #endif
+
+     
+
+     red += pulse.ps1;
+
+     IR1 += pulse.ps2;
+
+     IR2 += pulse.ps3;
+
+     i++;
+
+     }
+
+     
+
+    red = red / i;  // get averages
+
+    IR1 = IR1 / i;
+
+    IR2 = IR2 / i;
+
+    total =  IR1 + IR2 + red;  // red excluded
+
+    IRtotal = IR1 + IR2;
+
+    
+
+   
+
+
+
+#ifdef AMBIENT_LIGHT_SAMPLING
+
+
+
+    Serial.print(pulse.resp, HEX);     // resp
+
+    Serial.print("\t");
+
+    Serial.print(pulse.als_vis);       //  ambient visible
+
+    Serial.print("\t");
+
+    Serial.print(pulse.als_ir);        //  ambient IR
+
+    Serial.print("\t");
+
+
+
+#endif
+
+
+
+
+
+#ifdef PRINT_LED_VALS
+
+
+
+    Serial.print(red);
+
+    Serial.print("\t");
+
+    Serial.print(IR1);
+
+    Serial.print("\t");
+
+    Serial.print(IR2);
+
+    Serial.print("\t");
+
+    Serial.println((long)total);   
+
+
+
+#endif
+
+
+
+ #ifdef SEND_TOTAL_TO_PROCESSING
+
+    Serial.println(total);
+
+ #endif
+
+
+
+ #ifdef GET_PULSE_READING
+
+
+
+    // except this one for Processing heartbeat monitor
+
+    // comment out all the bottom print lines
+
+
+
+    if (lastTotal < 20000L && total > 20000L) foundNewFinger = 1;  // found new finger!
+
+
+
+    lastTotal = total;
+
+     
+
+    // if found a new finger prime filters first 20 times through the loop
+
+    if (++foundNewFinger > 25) foundNewFinger = 25;   // prevent rollover 
+
+
+
+    if ( foundNewFinger < 20){
+
+        IR_baseline = total - 200;   // take a guess at the baseline to prime smooth filter
+
+   Serial.println("found new finger");     
+
+    }
+
+    
+
+    else if(total > 20000L) {    // main running function
+
+    
+
+    
+
+        // baseline is the moving average of the signal - the middle of the waveform
+
+        // the idea here is to keep track of a high frequency signal, HFoutput and a 
+
+        // low frequency signal, LFoutput
+
+        // The LF signal is shifted downward slightly downward (heartbeats are negative peaks)
+
+        // The high freq signal has some hysterisis added. 
+
+        // When the HF signal crosses the shifted LF signal (on a downward slope), 
+
+        // we have found a heartbeat.
+
+        IR_baseline = smooth(IRtotal, 0.99, IR_baseline);   // 
+
+        IR_HFoutput = smooth((IRtotal - IR_baseline), 0.2, IR_HFoutput);    // recycling output - filter to slow down response
+
+        
+
+        red_baseline = smooth(red, 0.99, red_baseline); 
+
+        red_HFoutput = smooth((red - red_HFoutput), 0.2, red_HFoutput);
+
+        
+
+        // beat detection is performed only on the IR channel so 
+
+        // fewer red variables are needed
+
+        
+
+        IR_HFoutput2 = IR_HFoutput + hysterisis;     
+
+        LFoutput = smooth((IRtotal - IR_baseline), 0.95, LFoutput);
+
+        // heartbeat signal is inverted - we are looking for negative peaks
+
+        shiftedOutput = LFoutput - (IR_signalSize * .05);
+
+
+
+        if (IR_HFoutput  > IR_peak) IR_peak = IR_HFoutput; 
+
+        if (red_HFoutput  > red_Peak) red_Peak = red_HFoutput;
+
+        
+
+        // default reset - only if reset fails to occur for 1800 ms
+
+        if (millis() - lastPeakTime > 1800){  // reset peak detector slower than lowest human HB
+
+            IR_smoothPeak =  smooth((float)IR_peak, 0.6, (float)IR_smoothPeak);  // smooth peaks
+
+            IR_peak = 0;
+
+            
+
+            red_smoothPeak =  smooth((float)red_Peak, 0.6, (float)red_smoothPeak);  // smooth peaks
+
+            red_Peak = 0;
+
+            
+
+            lastPeakTime = millis();
+
+        }
+
+
+
+        if (IR_HFoutput  < IR_valley)   IR_valley = IR_HFoutput;
+
+        if (red_HFoutput  < red_valley)   red_valley = red_HFoutput;
+
+        
+
+  /*      if (IR_valley < -1500){
+
+            IR_valley = -1500;  // ditto above
+
+            Serial.println("-1500");
+
+        } 
+
+        if (red_valley < -1500) red_valley = -1500;  // ditto above  */
+
+
+
+
+
+
+
+        if (millis() - lastValleyTime > 1800){  // insure reset slower than lowest human HB
+
+            IR_smoothValley =  smooth((float)IR_valley, 0.6, (float)IR_smoothValley);  // smooth valleys
+
+            IR_valley = 0;
+
+            lastValleyTime = millis();           
+
+        }
+
+
+
+   //     IR_signalSize = IR_smoothPeak - IR_smoothValley;  // this the size of the smoothed HF heartbeat signal
+
+        hysterisis = constrain((IR_signalSize / 15), 35, 120) ;  // you might want to divide by smaller number
+
+                                                                // if you start getting "double bumps"
+
+            
+
+        // Serial.print(" T  ");
+
+        // Serial.print(IR_signalSize); 
+
+
+
+        if  (IR_HFoutput2 < shiftedOutput){
+
+            // found a beat - pulses are valleys
+
+            lastBinOut = binOut;
+
+            binOut = 1;
+
+         //   Serial.println("\t1");
+
+            hysterisis = -hysterisis;
+
+            IR_smoothValley =  smooth((float)IR_valley, 0.99, (float)IR_smoothValley);  // smooth valleys
+
+            IR_signalSize = IR_smoothPeak - IR_smoothValley;
+
+            IR_valley = 0x7FFF;
+
+            
+
+            red_smoothValley =  smooth((float)red_valley, 0.99, (float)red_smoothValley);  // smooth valleys
+
+            red_signalSize = red_smoothPeak - red_smoothValley;
+
+            red_valley = 0x7FFF;
+
+            
+
+            lastValleyTime = millis();
+
+             
+
+        } 
+
+        else{
+
+         //   Serial.println("\t0");
+
+            lastBinOut = binOut;
+
+            binOut = 0;
+
+            IR_smoothPeak =  smooth((float)IR_peak, 0.99, (float)IR_smoothPeak);  // smooth peaks
+
+            IR_peak = 0;
+
+            
+
+            red_smoothPeak =  smooth((float)red_Peak, 0.99, (float)red_smoothPeak);  // smooth peaks
+
+            red_Peak = 0;
+
+            lastPeakTime = millis();      
+
+            } 
+
+
+
+  if (lastBinOut == 1 && binOut == 0){
+
+      Serial.println(binOut);
+
+  }
+
+
+
+        if (lastBinOut == 0 && binOut == 1){
+
+            lastBeat = beat;
+
+            beat = millis();
+
+            BPM = 60000 / (beat - lastBeat);
+
+            Serial.print(binOut);
+
+            Serial.print("\t BPM ");
+
+            Serial.print(BPM);  
+
+            Serial.print("\t IR ");
+
+            Serial.print(IR_signalSize);
+
+            Serial.print("\t PSO2 ");         
+
+            Serial.println(((float)red_baseline / (float)(IR_baseline/2)), 3);                     
+
+        }
+
+
+
+    }
+
+ #endif
+
+}
+
+
+
+
+
 void readPulseSensor() {
 
 
