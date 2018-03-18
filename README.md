@@ -1,6 +1,8 @@
 
 
 
+
+
 # smartband
 ID107 heartrate nordic nrf51822 smartwatch arduino
 
@@ -74,6 +76,17 @@ https://moderndevice.com/news/pulse-sensor-i/
 
 
 My guess is : in the original watch the green led blink at a high frequency, in my demo they do not blink ....
+
+pulse.setReg(PulsePlug::IRQ_MODE1, 0x0F);     // interrupt on ps2 AND PS1 measurement
+pulse.setReg(PulsePlug::MEAS_RATE, 0xB9);     // every 100ms
+pulse.setReg(PulsePlug::PS_LED21, 0xFF);      //  maximum power
+
+I modified some parameters and now the green leds blink, so I get 10 measurements per second.
+
+I think https://pulsesensor.com/pages/pulse-sensor-amped-arduino-v1dot1 is a good starting point to rewrite the readPulseSensorPS02 function. No infrared measurements are used, simply because there's no IR LED.
+
+
+
 
 
 
