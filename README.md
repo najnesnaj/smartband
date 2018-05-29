@@ -47,13 +47,15 @@ Click the Install button to install the library.
 NOTE :
 
 by flashing the Arduino script, you overwrite the firmware (the watch as you knew it, is no more ...)
+
 This is work in progress, and I'm a lousy programmer ....
-I cut a few corners, by commenting out stuff in the libraries (eg //#include <avr/sleep.h> #include <util/atomic.h>)
+
+I cut a few corners (in the si114 library), by commenting out stuff in the libraries (eg //#include <avr/sleep.h> #include <util/atomic.h>)
 
 My intention is to monitor heart rate.
 For now I use the "Nordic nrf Connect App" to read out data from the watch, but I guess soldering the serial port is an easier option ...
 
-There exist different versions of this watch, mine is 2.4 (e.g. version 2.3 has a different pinout for si1142 ( SDA pin 26, SCL pin 28)
+There exist different versions of this watch, mine is 2.4 (e.g. version 2.3 has a different pinout for si1142 ( SDA pin 26, SCL pin 28) -- this means you might have to change the si114 library hardcoded pins
 
 
 For reference, @sanpii has the same board as mine ID107 ver2.4 in his repo https://github.com/sanpii/open-id107
@@ -70,20 +72,17 @@ You can have look at the inside of the watch on  https://fccid.io/2AHFTID107/Int
 
 
 
-I used the PSO2 demo, but I get a wide range of heart beats ;)
+I used the PSO2 demo, but the output was erratic 
 
 https://moderndevice.com/news/pulse-sensor-i/ 
 
 
-My guess is : in the original watch the green led blink at a high frequency, in my demo they do not blink ....
+I modified some parameters (see : BPM_simple.ino).
+I used the biggest IR sensor and only the ps1-mux.
 
-pulse.setReg(PulsePlug::IRQ_MODE1, 0x0F);     // interrupt on ps2 AND PS1 measurement
-pulse.setReg(PulsePlug::MEAS_RATE, 0xB9);     // every 100ms
-pulse.setReg(PulsePlug::PS_LED21, 0xFF);      //  maximum power
+I get to see the heartbeat (heartbeat.jpg)
 
-I modified some parameters and now the green leds blink, so I get 10 measurements per second.
 
-I think https://pulsesensor.com/pages/pulse-sensor-amped-arduino-v1dot1 is a good starting point to rewrite the readPulseSensorPS02 function. No infrared measurements are used, simply because there's no IR LED.
 
 
 
