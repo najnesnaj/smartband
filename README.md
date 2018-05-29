@@ -88,7 +88,7 @@ I use a raspberry pi to program the watch -- see openocd for howto
 
 ---------------------------------------------------------------------
 
-The watch sends the values on the serial bluetooth; 
+The watch sends the values on the serial bluetooth; (script in KX022_getAcc) 
 see blue-py directory for howto readout data on raspberry pi
 
 ---------------------------------------------------------------------
