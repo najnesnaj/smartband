@@ -82,6 +82,18 @@ I used the biggest IR sensor and only the ps1-mux.
 
 I get to see the heartbeat (heartbeat.jpg)
 
+---------------------------------------------------------------------
+
+I use a raspberry pi to program the watch -- see openocd for howto
+
+---------------------------------------------------------------------
+
+The watch sends the values on the serial bluetooth; 
+see blue-py directory for howto readout data on raspberry pi
+
+---------------------------------------------------------------------
+
+
 
 
 

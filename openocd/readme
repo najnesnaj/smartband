@@ -1,0 +1,10 @@
+program to combine softdevice and sketch:
+
+python merge_hex.py softdevice.hex program.hex output.hex
+
+
+use "ST LINK V2" connector on raspberry pi to upload to smartwatch 
+
+./upload output.hex
+
+

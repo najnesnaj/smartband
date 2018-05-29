@@ -1,0 +1,11 @@
+This is a method to readout a bluetooth 4.0 usb dongle on raspberry pi.
+
+The smartwatch sends values on the serial port, and with (python test.py) they can be read.
+
+
+
+sudo apt-get install python-pip libglib2.0-dev
+sudo pip install bluepy
+
+
+https://doc.info.fundp.ac.be/mediawiki/index.php/Bluepy:_Python_interface_to_Bluetooth_LE_on_Linux#Using_Nordic.E2.80.99s_UART_service_to_send_and_receive_data
