@@ -1,0 +1,13 @@
+bluetootctl //start
+scan on //scan ble devices
+connect 23:33....
+
+---if connected all services are displayed with descriptor
+
+
+
+menu gatt //goto menu gatt
+
+select-attribute /org/bluez/hci0/dev_DA_E2_C9_AB_2F_65/service000c/char000d/desc000f //this is the serial TX of ID107
+
+read //read value on serial port
