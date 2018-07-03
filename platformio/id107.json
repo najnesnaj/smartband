@@ -1,0 +1,36 @@
+{
+	"build": {
+		"core": "nRF5",
+		"cpu": "cortex-m0",
+		"extra_flags": "-DARDUINO_GENERIC -DS130 -DNRF51_S130",
+		"f_cpu": "32000000L",
+		"ldscript": "nrf51_xxaa.ld",
+		"mcu": "nrf51822",
+		"variant": "Generic"
+	},
+	"connectivity": [
+		"bluetooth"
+	],
+	"debug": {
+		"jlink_device": "nRF51802_xxAA",
+		"svd_path": "nrf51.svd"
+	},
+	"frameworks": [
+		"arduino"
+	],
+	"name": "id107",
+	"upload": {
+		"maximum_ram_size": 32768,
+		"maximum_size": 262144,
+		"protocol": "stlink",
+		"protocols": [
+			"blackmagic",
+			"jlink",
+			"nrfjprog",
+			"stlink"
+		]
+	},
+	"url": "http://www.rfduino.com/product/rfd22102-rfduino-dip/index.html",
+	"vendor": "china"
+}
+
