@@ -88,6 +88,22 @@ I use a raspberry pi to program the watch -- see openocd for howto
 
 ---------------------------------------------------------------------
 
+it is possible to program via CLI on the raspberry pi, using platformio
+-> see directory platformio on how to setup 
+-> directory platformio-id107 for an example
+
+---------------------------------------------------------------------
+
+there is a way to use DFU (device firmware update) -- programming the watch over the air, while it is still on your wrist -- see https://github.com/najnesnaj/ota-dfu-smartband
+
+----------------------------------------------------------------------
+
+the libraries necessary to the included in the example, are copied under this repository
+
+------------------------------------------------------------------------
+
+
+
 The watch sends the values on the serial bluetooth; (script in KX022_getAcc) 
 see blue-py directory for howto readout data on raspberry pi
 
